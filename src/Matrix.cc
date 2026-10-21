@@ -304,6 +304,10 @@ NAN_METHOD(Matrix::Pixel) {
   int y = Nan::To<int>(info[0]).FromJust();
   int x = Nan::To<int>(info[1]).FromJust();
 
+  if (y < 0 || x < 0 || y >= self->mat.rows || x >= self->mat.cols) {
+    return Nan::ThrowRangeError("row and column are outside the matrix");
+  }
+
   // cv::Scalar scal = self->mat.at<uchar>(y, x);
 
   if (info.Length() == 3) {
