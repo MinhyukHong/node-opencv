@@ -419,10 +419,18 @@ NAN_METHOD(Matrix::Put) {
   SETUP_FUNCTION(Matrix)
 
   if (!Buffer::HasInstance(info[0])) {
-    Nan::ThrowTypeError("Not a buffer");
+    return Nan::ThrowTypeError("Not a buffer");
   }
   const char* buffer_data = Buffer::Data(info[0]);
   size_t buffer_length = Buffer::Length(info[0]);
+
+  if (self->mat.data == NULL || !self->mat.isContinuous()) {
+    return Nan::ThrowError("Matrix has no continuous buffer to write into");
+  }
+  if (buffer_length > self->mat.total() * self->mat.elemSize()) {
+    return Nan::ThrowRangeError("Buffer is larger than the matrix data");
+  }
+
   memcpy(self->mat.data, buffer_data, buffer_length);
   return;
 }
