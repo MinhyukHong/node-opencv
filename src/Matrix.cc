@@ -350,6 +350,10 @@ NAN_METHOD(Matrix::Get) {
   int i = Nan::To<int>(info[0]).FromJust();
   int j = Nan::To<int>(info[1]).FromJust();
 
+  if (i < 0 || j < 0 || i >= self->mat.rows || j >= self->mat.cols) {
+    return Nan::ThrowRangeError("row and column are outside the matrix");
+  }
+
   double val = Matrix::DblGet(self->mat, i, j);
   info.GetReturnValue().Set(Nan::New<Number>(val));
 }
@@ -359,6 +363,10 @@ NAN_METHOD(Matrix::GetPixel) {
 
   int y = Nan::To<int>(info[0]).FromJust();
   int x = Nan::To<int>(info[1]).FromJust();
+
+  if (y < 0 || x < 0 || y >= self->mat.rows || x >= self->mat.cols) {
+    return Nan::ThrowRangeError("row and column are outside the matrix");
+  }
 
   if (self->mat.channels() == 4) {
     v8::Local < v8::Array > arr = Nan::New<Array>(4);
