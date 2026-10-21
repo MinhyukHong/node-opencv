@@ -387,8 +387,16 @@ NAN_METHOD(Matrix::Set) {
   double val = info[2].As<Number>()->Value();
   int vint = 0;
 
+  if (i < 0 || j < 0 || i >= self->mat.rows || j >= self->mat.cols) {
+    return Nan::ThrowRangeError("row and column are outside the matrix");
+  }
+
   if (info.Length() == 4) {
-    self->mat.at<cv::Vec3b>(i, j)[info[3].As<Number>()->Value()] = val;
+    int channel = Nan::To<int>(info[3]).FromJust();
+    if (self->mat.channels() != 3 || channel < 0 || channel > 2) {
+      return Nan::ThrowRangeError("channel is outside the matrix");
+    }
+    self->mat.at<cv::Vec3b>(i, j)[channel] = val;
   } else if (info.Length() == 3) {
     switch (self->mat.type()) {
       case CV_32FC3:
